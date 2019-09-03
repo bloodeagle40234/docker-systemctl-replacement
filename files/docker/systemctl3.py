@@ -3644,7 +3644,7 @@ class Systemctl:
             logg.error(" %s: Failed to parse service type, ignoring: %s", unit, haveType)
             errors += 100
         for line in haveExecStart:
-            if not line.startswith("/") and not line.startswith("-/"):
+            if not line.startswith("/") and not line.startswith("-/") and not line.startswith("!!/"):
                 logg.error(" %s: Executable path is not absolute, ignoring: %s", unit, line.strip())
                 errors += 1
             usedExecStart.append(line)
@@ -3717,6 +3717,9 @@ class Systemctl:
                 exe = newcmd[0]
                 if not exe:
                     continue
+                if exe.startswith("!!/"):
+                    exe = exe[2:]
+
                 if exe[0] != "/":
                     logg.error(" Exec is not an absolute path:  %s=%s", execs, cmd)
                     abspath += 1
